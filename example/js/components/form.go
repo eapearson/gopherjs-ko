@@ -7,9 +7,9 @@ import (
 
 // Form contains observables used to store form data.
 type Form struct {
-	email ko.Observable
-	phone ko.Observable
-	form  ko.ValidatedObservable
+	email      ko.Observable
+	phone      ko.Observable
+	validation ko.ValidatedObservable
 }
 
 // SetupForm returns a component configuration for the form component.
@@ -44,7 +44,7 @@ func NewForm(params *js.Object) js.M {
 	}
 
 	// We use a ValidatedObservable to check if the form is valid.
-	form.form = ko.NewValidatedObservable(js.S{form.email, form.phone})
+	form.validation = ko.NewValidatedObservable(js.S{form.email, form.phone})
 
 	return js.M{
 		"email": form.email,
@@ -54,7 +54,7 @@ func NewForm(params *js.Object) js.M {
 }
 
 func (form *Form) save() {
-	if !form.form.IsValid() {
+	if !form.validation.IsValid() {
 		js.Global.Call("alert", "Form is not valid")
 	} else {
 		js.Global.Call("alert", "Form is valid")
