@@ -28,7 +28,7 @@ func main() {
 	ko.ApplyBindings(js.M{
 		// These bindings will be used to display the current page and to set the .active class
 		// in the navbar.
-		"route":  router.Current,
-		"active": router.Active,
+		"route": router.Current,
+		"path":  router.Path,
 	})
 }

@@ -7,9 +7,8 @@ import (
 )
 
 type Router struct {
-	router  *js.Object
 	Current ko.Observable
-	Active  ko.Computed
+	Path    ko.Computed
 }
 
 func NewRouter() *Router {
@@ -17,7 +16,7 @@ func NewRouter() *Router {
 		Current: ko.NewObservable(js.M{}),
 	}
 
-	r.Active = ko.NewComputed(func() interface{} {
+	r.Path = ko.NewComputed(func() interface{} {
 		return r.Current.Get().Get("path")
 	})
 
