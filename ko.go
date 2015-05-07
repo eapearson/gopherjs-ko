@@ -1,6 +1,6 @@
 // Package ko implements bindings to KnockoutJS.
 // It also has bindings for the Knockout Validation library:
-//   github.com/Knockout-Contrib/Knockout-Validation
+// github.com/Knockout-Contrib/Knockout-Validation
 package ko
 
 import "github.com/gopherjs/gopherjs/js"
