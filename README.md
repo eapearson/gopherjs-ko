@@ -1,5 +1,5 @@
 # GopherJS-Ko
-A KnockoutJS wrapper for GopherJS
+GopherJS bindings to KnockoutJS
 
 ## Install
 `go get github.com/mibitzi/gopherjs-ko`
