@@ -110,17 +110,17 @@ func (ob *Object) RemoveAll(items ...interface{}) *js.Object {
 	return ob.Call("removeAll", items...)
 }
 
-type components struct {
+type ComponentsFuncs struct {
 	*js.Object
 }
 
-func Components() *components {
-	return &components{
+func Components() *ComponentsFuncs {
+	return &ComponentsFuncs{
 		Object: Global().Get("components"),
 	}
 }
 
-func (co *components) Register(name string, params js.M) {
+func (co *ComponentsFuncs) Register(name string, params js.M) {
 	co.Call("register", name, params)
 }
 

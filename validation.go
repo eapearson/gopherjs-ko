@@ -14,14 +14,14 @@ func (ob *Object) IsValid() bool {
 	return ob.Call("isValid").Bool()
 }
 
-type validation struct {
+type ValidationFuncs struct {
 	*js.Object
 }
 
-func Validation() *validation {
-	return &validation{Object: Global().Get("validation")}
+func Validation() *ValidationFuncs {
+	return &ValidationFuncs{Object: Global().Get("validation")}
 }
 
-func (v *validation) Init(config js.M) {
+func (v *ValidationFuncs) Init(config js.M) {
 	v.Call("init", config)
 }
