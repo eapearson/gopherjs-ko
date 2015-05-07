@@ -1,0 +1,10 @@
+<h1>Home</h1>
+
+<p>Hello there! What's your name?</p>
+<div class="form-group">
+	<input type="text" class="form-control" data-bind="value: name">
+</div>
+
+<p data-bind="visible: name() != ''">
+	Hello <span data-bind="text: name"></span>
+</p>

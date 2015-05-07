@@ -29,10 +29,6 @@ type Computed interface {
 	Observable
 }
 
-type ValidatedObservable interface {
-	IsValid() bool
-}
-
 type Object struct {
 	*js.Object
 }
@@ -114,10 +110,6 @@ func (ob *Object) RemoveAll(items ...interface{}) *js.Object {
 	return ob.Call("removeAll", items...)
 }
 
-func (ob *Object) IsValid() bool {
-	return ob.Call("isValid").Bool()
-}
-
 type components struct {
 	*js.Object
 }
@@ -144,19 +136,24 @@ func NewObservableArray(data interface{}) ObservableArray {
 	return &Object{Global().Call("observableArray", data)}
 }
 
-func NewValidatedObservable(data interface{}) ValidatedObservable {
-	return &Object{Global().Call("validatedObservable", data)}
-}
-
 func NewComputed(fn func() interface{}) Computed {
 	return &Object{Global().Call("computed", fn)}
 }
 
-func RegisterTemplateURLLoader() {
+// RegisterURLTemplateLoader register a new template loader which can be used to load
+// template files from a webserver.
+// To use it you need to pass a map with a `url` key as template argument to your component:
+//   "template":  js.M{"url": "form.html"}
+// This loader requires jQuery.
+func RegisterURLTemplateLoader() {
 	loader := func(name string, config *js.Object, callback func(*js.Object)) {
 		url := config.Get("url")
 		if url != nil && url != js.Undefined {
-			js.Global.Get("jQuery").Call("get", url, func(data *js.Object) {
+			// Some browsers are caching these requests too aggressively
+			urlStr := url.String()
+			urlStr += "?_=" + js.Global.Call("eval", `Date.now()`).String()
+
+			js.Global.Get("jQuery").Call("get", urlStr, func(data *js.Object) {
 				// We need an array of DOM nodes, not a string.
 				// We can use the default loader to convert to the
 				// required format.
