@@ -38,7 +38,7 @@ func (home *Home) resetText() {
 }
 
 func (home *Home) fetchData() {
-	js.Global.Get("jQuery").Call("get", "/data.json", func(data *js.Object, status *js.Object, xhr *js.Object) {
+	js.Global.Get("jQuery").Call("get", "data.json", func(data *js.Object, status *js.Object, xhr *js.Object) {
 		home.data.Set(xhr.Get("responseText"))
 	})
 }
