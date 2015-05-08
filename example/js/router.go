@@ -29,7 +29,8 @@ func (r *Router) init() {
 	// We use pagejs to do our routing.
 	page := js.Global.Get("page")
 
-	page.Call("base", "/gopherjs-ko/example/static/")
+	// This is only required if your site does not run under /
+	page.Call("base", js.Global.Get("window").Get("location").Get("pathname"))
 
 	// Handle the home page
 	page.Invoke("/", func(ctx *js.Object) {
