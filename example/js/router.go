@@ -43,7 +43,9 @@ func (r *Router) init() {
 	page.Call("redirect", "*", "/")
 
 	// Apply our paths and config
-	page.Invoke(js.M{})
+	page.Invoke(js.M{
+		"hashbang": true, // You can remove this, if your backend redirects everything to index.html
+	})
 }
 
 // Set changes the current page and sets its parameters.
