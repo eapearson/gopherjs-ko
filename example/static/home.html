@@ -1,10 +1,31 @@
 <h1>Home</h1>
 
-<p>Hello there! What's your name?</p>
-<div class="form-group">
-	<input type="text" class="form-control" data-bind="value: name">
+<div class="panel panel-default">
+	<div class="panel-heading">Write some text</div>
+	<div class="panel-body">
+		<div class="form-group">
+			<input type="text" class="form-control" data-bind="value: text, valueUpdate: 'afterkeydown'">
+		</div>
+
+		<p data-bind="visible: text() != ''">
+			You wrote: <span data-bind="text: text"></span>.
+		</p>
+		<p>
+			<button type="button" class="btn btn-default" data-bind="click: resetText">
+				Reset
+			</button>
+	</div>
 </div>
 
-<p data-bind="visible: name() != ''">
-	Nice to meet you, <span data-bind="text: name"></span>.
-</p>
+<div class="panel panel-default">
+	<div class="panel-heading">Ajax data</div>
+	<div class="panel-body">
+		<button type="button" class="btn btn-default" data-bind="click: fetchData">
+			Fetch some fake data
+		</button>
+
+		<p>
+			<pre data-bind="visible: data() != '', text: data"></pre>
+		</p>
+	</div>
+</div>

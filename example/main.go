@@ -2,10 +2,12 @@ package main
 
 import (
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"os/exec"
 	"regexp"
+	"strconv"
 )
 
 var assetRegexp = regexp.MustCompile(`\.(html|jpg|png|ico|css|js|json|eot|svg|ttf|woff|woff2)$`)
@@ -21,7 +23,11 @@ func main() {
 		cmd.Run()
 	}()
 
-	log.Println("Listening on :8000 ...")
+	http.HandleFunc("/data", func(w http.ResponseWriter, r *http.Request) {
+		val := strconv.Itoa(rand.Int())
+		w.Write([]byte(`{"data": "Some data from the backend", "value": ` + val + `}`))
+	})
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if assetRegexp.MatchString(r.URL.Path) {
 			http.ServeFile(w, r, "static"+r.URL.Path)
@@ -29,5 +35,7 @@ func main() {
 			http.ServeFile(w, r, "static/index.html")
 		}
 	})
+
+	log.Println("Listening on :8000 ...")
 	http.ListenAndServe(":8000", nil)
 }

@@ -5,6 +5,11 @@ import (
 	"github.com/mibitzi/gopherjs-ko"
 )
 
+type Home struct {
+	data ko.Observable
+	text ko.Observable
+}
+
 // SetupHome returns a component configuration for the home component.
 func SetupHome() js.M {
 	return js.M{
@@ -15,7 +20,25 @@ func SetupHome() js.M {
 
 // NewHome returns a new viewModel for the home component.
 func NewHome(params *js.Object) js.M {
-	return js.M{
-		"name": ko.NewObservable(""),
+	home := &Home{
+		data: ko.NewObservable(""),
+		text: ko.NewObservable(""),
 	}
+
+	return js.M{
+		"data":      home.data,
+		"text":      home.text,
+		"resetText": home.resetText,
+		"fetchData": home.fetchData,
+	}
+}
+
+func (home *Home) resetText() {
+	home.text.Set("")
+}
+
+func (home *Home) fetchData() {
+	js.Global.Get("jQuery").Call("get", "/data", func(resp *js.Object) {
+		home.data.Set(resp)
+	})
 }
