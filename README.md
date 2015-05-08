@@ -8,4 +8,5 @@ GopherJS bindings to KnockoutJS
 For documentation, see http://godoc.org/github.com/mibitzi/gopherjs-ko
 
 ## Example
-There is also an [example](https://github.com/mibitzi/gopherjs-ko/tree/master/example) for a basic single page application using KnockoutJS / Knockout Validation / page.js
+There is also an example for a basic single page application using KnockoutJS / Knockout Validation / page.js
+You can see an online version [here](http://mibitzi.github.io/gopherjs-ko/example/static/)
