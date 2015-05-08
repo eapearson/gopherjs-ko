@@ -9,4 +9,5 @@ For documentation, see http://godoc.org/github.com/mibitzi/gopherjs-ko
 
 ## Example
 There is also an example for a basic single page application using KnockoutJS / Knockout Validation / page.js
-You can see an online version [here](http://mibitzi.github.io/gopherjs-ko/example/static/)
+
+You can see an online version of it [here](http://mibitzi.github.io/gopherjs-ko/example/static/)
