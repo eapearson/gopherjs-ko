@@ -172,6 +172,10 @@ func RegisterURLTemplateLoader() {
 	})
 }
 
+func Unwrap(ob *js.Object) *js.Object {
+	return Global().Call("unwrap", ob)
+}
+
 func ApplyBindings(model interface{}) {
 	Global().Call("applyBindings", model)
 }
