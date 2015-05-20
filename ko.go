@@ -1,5 +1,6 @@
 // Package ko implements bindings to KnockoutJS.
 // It also has bindings for the Knockout Validation library found on https://github.com/Knockout-Contrib/Knockout-Validation
+// Using EnableSecureBinding make KnockoutJS works under CSP environments.
 package ko
 
 import "github.com/gopherjs/gopherjs/js"
