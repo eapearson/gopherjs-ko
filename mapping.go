@@ -19,7 +19,7 @@ type Mapper struct {
 
 func Mapping() *Mapper {
 	return &Mapper{
-		Object: ko().Get("mapping"),
+		Object: Global().Get("mapping"),
 	}
 }
 

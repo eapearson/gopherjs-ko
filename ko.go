@@ -9,7 +9,7 @@ import (
 	"github.com/gopherjs/gopherjs/js"
 )
 
-func ko() *js.Object {
+func Global() *js.Object {
 	return js.Global.Get("ko")
 }
 
@@ -18,7 +18,7 @@ type Observable struct {
 }
 
 func NewObservable(args ...interface{}) *Observable {
-	return &Observable{ko().Call("observable", args...)}
+	return &Observable{Global().Call("observable", args...)}
 }
 
 func (ob *Observable) Set(data interface{}) {
@@ -67,7 +67,7 @@ type ObservableArray struct {
 }
 
 func NewObservableArray(args ...interface{}) *ObservableArray {
-	return &ObservableArray{&Observable{ko().Call("observableArray", args...)}}
+	return &ObservableArray{&Observable{Global().Call("observableArray", args...)}}
 }
 
 func (ob *ObservableArray) IndexOf(data interface{}) int {
@@ -135,14 +135,14 @@ type WritableComputed struct {
 }
 
 func NewComputed(fn func() interface{}) *Computed {
-	return &Computed{&Observable{ko().Call("computed", fn)}}
+	return &Computed{&Observable{Global().Call("computed", fn)}}
 }
 
 func NewWritableComputed(r func() interface{}, w func(interface{})) *WritableComputed {
 	return &WritableComputed{
 		&Computed{
 			&Observable{
-				ko().Call("computed", js.M{
+				Global().Call("computed", js.M{
 					"read":  r,
 					"write": w,
 				}),
@@ -173,7 +173,7 @@ type ComponentsFuncs struct {
 
 func Components() *ComponentsFuncs {
 	return &ComponentsFuncs{
-		o: ko().Get("components"),
+		o: Global().Get("components"),
 	}
 }
 
@@ -201,15 +201,15 @@ func (co *ComponentsFuncs) RegisterEx(name string, vmfunc func(params *js.Object
 }
 
 func IsObservable(data interface{}) bool {
-	return ko().Call("isObservable", data).Bool()
+	return Global().Call("isObservable", data).Bool()
 }
 
 func IsComputed(data interface{}) bool {
-	return ko().Call("isComputed", data).Bool()
+	return Global().Call("isComputed", data).Bool()
 }
 
 func IsWritableObservable(data interface{}) bool {
-	return ko().Call("isWritableObservable", data).Bool()
+	return Global().Call("isWritableObservable", data).Bool()
 }
 
 // RegisterURLTemplateLoader registers a new template loader which can be used to load
@@ -243,9 +243,9 @@ func RegisterURLTemplateLoader() {
 }
 
 func Unwrap(ob *js.Object) *js.Object {
-	return ko().Call("unwrap", ob)
+	return Global().Call("unwrap", ob)
 }
 
 func ApplyBindings(args ...interface{}) {
-	ko().Call("applyBindings", args...)
+	Global().Call("applyBindings", args...)
 }
