@@ -9,49 +9,34 @@ import (
 	"github.com/gopherjs/gopherjs/js"
 )
 
-type Disposer func()
+func ko() *js.Object {
+	return js.Global.Get("ko")
+}
 
 type Observable struct {
-	o *js.Object
-}
-
-type ObservableArray struct {
-	*Observable
-}
-
-type Computed struct {
-	*Observable
-}
-
-type WritableComputed struct {
-	*Computed
-}
-
-type Subscription struct {
 	*js.Object
 }
 
-func (s *Subscription) Dispose() {
-	s.Object.Call("dispose")
+func NewObservable(args ...interface{}) *Observable {
+	return &Observable{ko().Call("observable", args...)}
 }
 
 func (ob *Observable) Set(data interface{}) {
-	ob.o.Invoke(data)
+	ob.Object.Invoke(data)
 }
 
 func (ob *Observable) Get() *js.Object {
-	return ob.o.Invoke()
+	return ob.Object.Invoke()
 }
 
 func (ob *Observable) Subscribe(fn func(*js.Object)) *Subscription {
-	o := ob.o.Call("subscribe", fn)
 	return &Subscription{
-		Object: o,
+		Object: ob.Object.Call("subscribe", fn),
 	}
 }
 
 func (ob *Observable) Extend(params js.M) *Observable {
-	ob.o.Call("extend", params)
+	ob.Object.Call("extend", params)
 	return ob
 }
 
@@ -77,60 +62,48 @@ func (ob *Observable) RateLimit(timeframeMS int, notifyWhenChangesStop ...bool) 
 	})
 }
 
-// When a computed observable returns a primitive value (a number, string, boolean, or null),
-// the dependencies of the observable are normally only notified if the value actually changed.
-// However, it is possible to use the built-in notify extender to ensure
-// that a computed observable’s subscribers are always notified on an update,
-// even if the value is the same.
-func (ob *Observable) NotifyAlways() {
-	ob.Extend(js.M{
-		"notify": "always",
-	})
+type ObservableArray struct {
+	*Observable
 }
 
-// adds a new item to the end of array
+func NewObservableArray(args ...interface{}) *ObservableArray {
+	return &ObservableArray{&Observable{ko().Call("observableArray", args...)}}
+}
+
 func (ob *ObservableArray) IndexOf(data interface{}) int {
-	return ob.o.Call("indexOf", data).Int()
+	return ob.Object.Call("indexOf", data).Int()
 }
 
-// removes the last value from the array and returns it
 func (ob *ObservableArray) Pop() *js.Object {
-	return ob.o.Call("pop")
+	return ob.Object.Call("pop")
 }
 
-// inserts a new item at the beginning of the array
 func (ob *ObservableArray) Unshift(data interface{}) {
-	ob.o.Call("unshift", data)
+	ob.Object.Call("unshift", data)
 }
 
-// removes the first value from the array and returns it
 func (ob *ObservableArray) Shift() *js.Object {
-	return ob.o.Call("shift")
+	return ob.Object.Call("shift")
 }
 
 func (ob *ObservableArray) Reverse() {
-	ob.o.Call("reverse")
+	ob.Object.Call("reverse")
 }
 
 func (ob *ObservableArray) Sort() {
-	ob.o.Call("sort")
+	ob.Object.Call("sort")
 }
 
 func (ob *ObservableArray) SortFunc(fn func(*js.Object, *js.Object)) {
-	ob.o.Call("sort", fn)
+	ob.Object.Call("sort", fn)
 }
 
-// removes and returns a given number of elements starting from a given index.
-// For example,
-// 		myObservableArray.splice(1, 3)
-// removes three elements starting from index position 1
-// (i.e., the 2nd, 3rd, and 4th elements) and returns them as an array.
 func (ob *ObservableArray) Splice(i, n int) *js.Object {
-	return ob.o.Call("splice", i, n)
+	return ob.Object.Call("splice", i, n)
 }
 
 func (ob *ObservableArray) RemoveAll(items ...interface{}) *js.Object {
-	return ob.o.Call("removeAll", items...)
+	return ob.Object.Call("removeAll", items...)
 }
 
 func (ob *ObservableArray) Index(i int) *js.Object {
@@ -142,15 +115,56 @@ func (ob *ObservableArray) Length() int {
 }
 
 func (ob *ObservableArray) Push(data interface{}) {
-	ob.o.Call("push", data)
+	ob.Object.Call("push", data)
 }
 
 func (ob *ObservableArray) Remove(item interface{}) *js.Object {
-	return ob.o.Call("remove", item)
+	return ob.Object.Call("remove", item)
 }
 
 func (ob *ObservableArray) RemoveFunc(fn func(*js.Object) bool) *js.Object {
-	return ob.o.Call("remove", fn)
+	return ob.Object.Call("remove", fn)
+}
+
+type Computed struct {
+	*Observable
+}
+
+type WritableComputed struct {
+	*Computed
+}
+
+func NewComputed(fn func() interface{}) *Computed {
+	return &Computed{&Observable{ko().Call("computed", fn)}}
+}
+
+func NewWritableComputed(r func() interface{}, w func(interface{})) *WritableComputed {
+	return &WritableComputed{
+		&Computed{
+			&Observable{
+				ko().Call("computed", js.M{
+					"read":  r,
+					"write": w,
+				}),
+			},
+		},
+	}
+}
+
+func (ob *Computed) Dispose() {
+	ob.Object.Call("dispose")
+}
+
+func (ob *Computed) Peek() *js.Object {
+	return ob.Object.Call("peek")
+}
+
+type Subscription struct {
+	*js.Object
+}
+
+func (s *Subscription) Dispose() {
+	s.Object.Call("dispose")
 }
 
 type ComponentsFuncs struct {
@@ -186,51 +200,6 @@ func (co *ComponentsFuncs) RegisterEx(name string, vmfunc func(params *js.Object
 	})
 }
 
-func ko() *js.Object {
-	return js.Global.Get("ko")
-}
-
-func NewObservable(data ...interface{}) *Observable {
-	if len(data) >= 1 {
-		return &Observable{ko().Call("observable", data[0])}
-	}
-	return &Observable{ko().Call("observable")}
-}
-
-func NewObservableArray(data ...interface{}) *ObservableArray {
-	if len(data) >= 1 {
-		return &ObservableArray{&Observable{ko().Call("observableArray", data[0])}}
-	}
-	return &ObservableArray{&Observable{ko().Call("observableArray")}}
-}
-
-func NewComputed(fn func() interface{}) *Computed {
-	return &Computed{&Observable{ko().Call("computed", fn)}}
-}
-
-func NewWritableComputed(r func() interface{}, w func(interface{})) *WritableComputed {
-	return &WritableComputed{
-		&Computed{
-			&Observable{
-				ko().Call("computed", js.M{
-					"read":  r,
-					"write": w,
-				}),
-			},
-		},
-	}
-}
-
-func (ob *Computed) Dispose() {
-	ob.o.Call("dispose")
-}
-
-// Returns the current value of the computed observable without creating a dependency
-func (ob *Computed) Peek() *js.Object {
-	return ob.o.Call("peek")
-}
-
-// returns true for observables, observable arrays, and all computed observables.
 func IsObservable(data interface{}) bool {
 	return ko().Call("isObservable", data).Bool()
 }
@@ -239,12 +208,11 @@ func IsComputed(data interface{}) bool {
 	return ko().Call("isComputed", data).Bool()
 }
 
-// returns true for observables, observable arrays, and writable computed observables
 func IsWritableObservable(data interface{}) bool {
 	return ko().Call("isWritableObservable", data).Bool()
 }
 
-// RegisterURLTemplateLoader register a new template loader which can be used to load
+// RegisterURLTemplateLoader registers a new template loader which can be used to load
 // template files from a webserver.
 // To use it you need to pass a map with a `url` key as template argument to your component:
 //   "template":  js.M{"url": "form.html"}
@@ -278,22 +246,6 @@ func Unwrap(ob *js.Object) *js.Object {
 	return ko().Call("unwrap", ob)
 }
 
-// In case you’re wondering what the parameters to ko.applyBindings do,
-//
-// the first parameter says what view model object you want to use with the declarative bindings it activates
-//
-// Optionally, you can pass a second parameter to define which part of the document you want to search for data-bind attributes.
-//
-// For example,
-// 	ko.applyBindings(myViewModel, document.getElementById('someElementId')).
-// This restricts the activation to the element with ID someElementId and its descendants, which is useful if you want to have multiple view models and associate each with a different region of the page.
 func ApplyBindings(args ...interface{}) {
-	if len(args) < 1 {
-		panic("ko.ApplyBindings takes at least ONE parameter")
-	}
-	if len(args) >= 2 {
-		ko().Call("applyBindings", args[0], args[1])
-		return
-	}
-	ko().Call("applyBindings", args[0])
+	ko().Call("applyBindings", args...)
 }

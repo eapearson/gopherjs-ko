@@ -11,7 +11,7 @@ func NewValidatedObservable(data interface{}) *ValidatedObservable {
 }
 
 func (v *ValidatedObservable) IsValid() bool {
-	return v.o.Call("isValid").Bool()
+	return v.Object.Call("isValid").Bool()
 }
 
 type ValidationFuncs struct {
